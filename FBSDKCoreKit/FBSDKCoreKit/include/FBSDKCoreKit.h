@@ -213,3 +213,7 @@
 #import <FBSDKCoreKit/WKWebView+WebViewProtocol.h>
 #import <FBSDKCoreKit/FBSDKGraphRequestQueue.h>
 #import <FBSDKCoreKit/FBSDKTransactionObserving.h>
+#import <FBSDKCoreKit/FBSDKIAPFailedTransactionLogging.h>
+#import <FBSDKCoreKit/FBSDKIAPFailedTransactionLoggingCreating.h>
+#import <FBSDKCoreKit/FBSDKIAPDedupeProcessing.h>
+#import <FBSDKCoreKit/FBSDKIAPTransactionCaching.h>

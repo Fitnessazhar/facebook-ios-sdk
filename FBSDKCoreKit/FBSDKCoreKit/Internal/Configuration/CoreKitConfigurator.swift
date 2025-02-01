@@ -116,7 +116,10 @@ private extension CoreKitConfigurator {
       blocklistEventsManager: components.blocklistEventsManager,
       redactedEventsManager: components.redactedEventsManager,
       sensitiveParamsManager: components.sensitiveParamsManager,
-      transactionObserver: components.transactionObserver
+      transactionObserver: components.transactionObserver,
+      failedTransactionLoggingFactory: IAPTransactionLoggingFactory(),
+      iapDedupeProcessor: components.iapDedupeProcessor,
+      iapTransactionCache: components.iapTransactionCache
     )
   }
 
