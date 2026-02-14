@@ -12,7 +12,21 @@ enum IAPConstants {
   static let restoredPurchasesCacheKey = "com.facebook.sdk:RestoredPurchasesKey"
   static let loggedTransactionsCacheKey = "com.facebook.sdk:LoggedTransactionsKey"
   static let newCandidatesDateCacheKey = "com.facebook.sdk:NewCandidatesDateKey"
+  static let oldestCachedTransactionkey = "com.facebook.sdk:OldestCachedTransactionKey"
   static let transactionDateFormat = "yyyy-MM-dd HH:mm:ssZ"
   static let defaultIAPObservationTime: UInt64 = 3600000000000
+  static let defaultIAPDedupeWindow: TimeInterval = 60
   static let IAPSDKLibraryVersions = "SK1-SK2"
+  static let dedupableEvents: Set<AppEvents.Name> = [.purchased, .subscribe, .startTrial]
+  static let verifiableEvents: Set<AppEvents.Name> = [
+    .purchased,
+    .subscribe,
+    .startTrial,
+    .purchaseRestored,
+    .subscribeRestore,
+  ]
+  static let manuallyLoggedDedupableEventsKey = "com.facebook.sdk:ManualDedupableEventsKey"
+  static let implicitlyLoggedDedupableEventsKey = "com.facebook.sdk:ImplicitDedupableEventsKey"
+  static let sk2ReleaseDate = "2025-01-14"
+  static let consumablesInPurchaseHistoryKey = "SKIncludeConsumableInAppPurchaseHistory"
 }

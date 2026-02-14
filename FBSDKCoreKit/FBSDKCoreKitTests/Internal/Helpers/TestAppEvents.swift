@@ -103,7 +103,10 @@ final class TestAppEvents: TestEventLogger,
     blocklistEventsManager: _EventsProcessing,
     redactedEventsManager: _EventsProcessing,
     sensitiveParamsManager: _AppEventsParameterProcessing,
-    transactionObserver: _TransactionObserving
+    transactionObserver: _TransactionObserving,
+    failedTransactionLoggingFactory: IAPFailedTransactionLoggingCreating,
+    iapDedupeProcessor: _IAPDedupeProcessing,
+    iapTransactionCache: _IAPTransactionCaching
   ) {
     capturedConfigureGateKeeperManager = gateKeeperManager
     capturedConfigureAppEventsConfigurationProvider = appEventsConfigurationProvider

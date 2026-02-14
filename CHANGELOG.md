@@ -10,7 +10,35 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## Unreleased
 
-[Full Changelog](https://github.com/facebook/facebook-ios-sdk/compare/v17.4.0...HEAD)
+[Full Changelog](https://github.com/facebook/facebook-ios-sdk/compare/v18.0.3...HEAD)
+
+## 18.0.3
+- Added anonymous deferral deeplink support
+
+[2026-02-10](https://github.com/facebook/facebook-ios-sdk/releases/tag/v18.0.3) |
+[Full Changelog](https://github.com/facebook/facebook-ios-sdk/compare/v18.0.2...v18.0.3)
+
+## 18.0.2
+- Reintroduced fast app switching capabilities
+
+[2025-11-13](https://github.com/facebook/facebook-ios-sdk/releases/tag/v18.0.2) |
+[Full Changelog](https://github.com/facebook/facebook-ios-sdk/compare/v18.0.1...v18.0.2)
+
+## 18.0.1
+
+### Added
+- Added additional capability for link attachments to have music attached
+
+[2025-08-17](https://github.com/facebook/facebook-ios-sdk/releases/tag/v18.0.1) |
+[Full Changelog](https://github.com/facebook/facebook-ios-sdk/compare/v18.0.0...v18.0.1)
+
+## 18.0.0
+
+### Added
+- Improved support for in-app purchase events for Original StoreKit APIs and StoreKit 2 APIs
+
+[2025-01-10](https://github.com/facebook/facebook-ios-sdk/releases/tag/v18.0.0) |
+[Full Changelog](https://github.com/facebook/facebook-ios-sdk/compare/v17.4.0...v18.0.0)
 
 ## 17.4.0
 

@@ -46,6 +46,38 @@ extension IAPEventResolver: DependentAsType {
   }
 }
 
+extension IAPEventResolver {
+  func getInitiatedCheckoutEventFrom(event: IAPEvent) -> IAPEvent {
+    var eventName: AppEvents.Name = .initiatedCheckout
+    if event.isSubscription, isSubscriptionsEnabled {
+      eventName = .subscribeInitiatedCheckout
+    }
+    return IAPEvent(
+      eventName: eventName,
+      productID: event.productID,
+      productTitle: event.productTitle,
+      productDescription: event.productDescription,
+      amount: event.amount,
+      quantity: event.quantity,
+      currency: event.currency,
+      transactionID: event.transactionID,
+      originalTransactionID: event.originalTransactionID,
+      transactionDate: event.transactionDate,
+      originalTransactionDate: event.originalTransactionDate,
+      validationResult: nil,
+      isSubscription: event.isSubscription,
+      subscriptionPeriod: event.subscriptionPeriod,
+      isStartTrial: event.isStartTrial,
+      hasIntroductoryOffer: event.hasIntroductoryOffer,
+      hasFreeTrial: event.hasFreeTrial,
+      introductoryOfferSubscriptionPeriod: event.introductoryOfferSubscriptionPeriod,
+      introductoryOfferPrice: event.introductoryOfferPrice,
+      storeKitVersion: event.storeKitVersion,
+      productType: event.productType
+    )
+  }
+}
+
 // MARK: - Store Kit 2
 
 @available(iOS 15.0, *)
@@ -66,7 +98,21 @@ extension IAPEventResolver {
     return await resolveEventFor(iapTransaction: iapTransaction, eventName: eventName)
   }
 
-  private func isStartTrial(transaction: Transaction) -> Bool {
+  func resolveFailedEventFor(productID: String) async -> IAPEvent? {
+    guard let product = await getProductFor(productID: productID) else {
+      return nil
+    }
+    var eventName: AppEvents.Name = .purchaseFailed
+    if product.type == .autoRenewable, isSubscriptionsEnabled {
+      eventName = .subscribeFailed
+    }
+    return resolveEventFor(iapTransaction: nil, product: product, eventName: eventName)
+  }
+
+  private func isStartTrial(transaction: Transaction?) -> Bool {
+    guard let transaction else {
+      return false
+    }
     var isFreeTrial = false
     if #available(iOS 17.2, *) {
       isFreeTrial = transaction.offer?.paymentMode == .freeTrial
@@ -81,8 +127,8 @@ extension IAPEventResolver {
     return isFreeTrial ? .startTrial : .subscribe
   }
 
-  private func getProductFor(iapTransaction: IAPTransaction) async -> Product? {
-    guard let products = try? await Product.products(for: [iapTransaction.transaction.productID]),
+  private func getProductFor(productID: String) async -> Product? {
+    guard let products = try? await Product.products(for: [productID]),
           let product = products.first else {
       return nil
     }
@@ -90,38 +136,62 @@ extension IAPEventResolver {
   }
 
   private func resolveEventFor(iapTransaction: IAPTransaction, eventName: AppEvents.Name) async -> IAPEvent? {
-    guard let product = await getProductFor(iapTransaction: iapTransaction) else {
+    guard let product = await getProductFor(productID: iapTransaction.transaction.productID) else {
       return nil
     }
-    let transaction = iapTransaction.transaction
-    var currency = transaction.currencyCode
+    return resolveEventFor(iapTransaction: iapTransaction, product: product, eventName: eventName)
+  }
+
+  private func resolveEventFor(
+    iapTransaction: IAPTransaction?,
+    product: Product,
+    eventName: AppEvents.Name
+  ) -> IAPEvent? {
+    let transaction = iapTransaction?.transaction
+    var currency: String?
     if #available(iOS 16.0, *) {
-      currency = transaction.currency?.identifier
+      currency = transaction?.currency?.identifier
+    } else {
+      currency = transaction?.currencyCode
     }
     let introOffer = product.subscription?.introductoryOffer
     let hasIntroductoryOffer = introOffer != nil
     let hasFreeTrial = introOffer?.paymentMode == .freeTrial
+    var transactionID: String?
+    if let id = iapTransaction?.transaction.id {
+      transactionID = String(id)
+    }
+    var originalTransactionID: String?
+    if let originalID = iapTransaction?.transaction.originalID {
+      originalTransactionID = String(originalID)
+    }
+    let quantity = transaction?.purchasedQuantity ?? 1
+    var amount = transaction?.price ?? product.price
+    if product.type == .consumable, quantity > 1, amount == product.price {
+      amount = product.price * Decimal(quantity)
+    }
     return IAPEvent(
       eventName: eventName,
-      productID: transaction.productID,
+      productID: transaction?.productID ?? product.id,
       productTitle: product.displayName,
       productDescription: product.description,
-      amount: transaction.price ?? 0.0,
-      quantity: transaction.purchasedQuantity,
-      currency: currency,
-      transactionID: String(iapTransaction.transaction.id),
-      originalTransactionID: String(iapTransaction.transaction.originalID),
-      transactionDate: transaction.purchaseDate,
-      originalTransactionDate: transaction.originalPurchaseDate,
-      validationResult: iapTransaction.validationResult,
-      isSubscription: iapTransaction.transaction.isSubscription,
+      amount: amount,
+      quantity: quantity,
+      currency: currency ?? product.priceFormatStyle.currencyCode,
+      transactionID: transactionID,
+      originalTransactionID: originalTransactionID,
+      transactionDate: transaction?.purchaseDate,
+      originalTransactionDate: transaction?.originalPurchaseDate,
+      validationResult: iapTransaction?.validationResult,
+      isSubscription: iapTransaction?.transaction.isSubscription ?? (product.type == .autoRenewable),
       subscriptionPeriod: product.subscription?.subscriptionPeriod.iapSubscriptionPeriod,
-      isStartTrial: isStartTrial(transaction: iapTransaction.transaction),
+      isStartTrial: isStartTrial(transaction: iapTransaction?.transaction),
       hasIntroductoryOffer: hasIntroductoryOffer,
       hasFreeTrial: hasFreeTrial,
       introductoryOfferSubscriptionPeriod: introOffer?.period.iapSubscriptionPeriod,
       introductoryOfferPrice: introOffer?.price,
-      storeKitVersion: .version2
+      storeKitVersion: .version2,
+      productType: iapTransaction?.transaction.productType.iapProductType ?? product.type.iapProductType
     )
   }
 }
@@ -223,7 +293,8 @@ extension IAPEventResolver {
       hasFreeTrial: hasFreeTrial,
       introductoryOfferSubscriptionPeriod: product?.introductoryPrice?.subscriptionPeriod.iapSubscriptionPeriod,
       introductoryOfferPrice: product?.introductoryPrice?.price.decimalValue,
-      storeKitVersion: .version1
+      storeKitVersion: .version1,
+      productType: nil
     )
     didResolve(event: event, for: transaction)
   }

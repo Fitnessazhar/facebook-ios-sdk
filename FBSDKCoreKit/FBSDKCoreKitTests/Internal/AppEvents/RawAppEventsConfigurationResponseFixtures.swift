@@ -17,6 +17,8 @@ final class RawAppEventsConfigurationResponseFixtures: NSObject {
     static let advertiserIDCollectionEnabled = "advertiser_id_collection_enabled"
     static let eventCollectionEnabled = "event_collection_enabled"
     static let iapObservationTime = "ios_iap_observation_time"
+    static let iapManualAndAutoLogDedupWindow = "iap_manual_log_dedup_window_millis"
+    static let iapManualAndAutologDedupKeys = "iap_manual_and_auto_log_dedup_keys"
     static let topLevel = "app_events_config"
   }
 
@@ -27,6 +29,91 @@ final class RawAppEventsConfigurationResponseFixtures: NSObject {
         Keys.advertiserIDCollectionEnabled: false,
         Keys.eventCollectionEnabled: true,
         Keys.iapObservationTime: 3600000000000,
+        Keys.iapManualAndAutoLogDedupWindow: 60000,
+        Keys.iapManualAndAutologDedupKeys: [
+          [
+            "key": "prod_keys",
+            "value": [
+              [
+                "key": "fb_content_id",
+                "value": [
+                  [
+                    "key": 0,
+                    "value": "fb_content_id",
+                  ],
+                  [
+                    "key": 1,
+                    "value": "fb_product_item_id",
+                  ],
+                ],
+              ],
+              [
+                "key": "fb_transaction_id",
+                "value": [
+                  [
+                    "key": 0,
+                    "value": "fb_transaction_id",
+                  ],
+                  [
+                    "key": 1,
+                    "value": "fb_order_id",
+                  ],
+                ],
+              ],
+            ],
+          ],
+          [
+            "key": "test_keys",
+            "value": [
+              [
+                "key": "test_key_1",
+                "value": [
+                  [
+                    "key": 0,
+                    "value": "test_value_0",
+                  ],
+                  [
+                    "key": 1,
+                    "value": "test_value_1",
+                  ],
+                ],
+              ],
+            ],
+          ],
+        ],
+      ],
+    ]
+  }
+
+  static var emptyDedupConfig: [String: Any] {
+    [
+      Keys.topLevel: [
+        Keys.defaultATEStatus: 1,
+        Keys.advertiserIDCollectionEnabled: false,
+        Keys.eventCollectionEnabled: true,
+        Keys.iapObservationTime: 3600000000000,
+        Keys.iapManualAndAutoLogDedupWindow: 60000,
+        Keys.iapManualAndAutologDedupKeys: [],
+      ],
+    ]
+  }
+
+  static var emptyProdAndTestDedupConfig: [String: Any] {
+    [
+      Keys.topLevel: [
+        Keys.defaultATEStatus: 1,
+        Keys.advertiserIDCollectionEnabled: false,
+        Keys.eventCollectionEnabled: true,
+        Keys.iapObservationTime: 3600000000000,
+        Keys.iapManualAndAutoLogDedupWindow: 60000,
+        Keys.iapManualAndAutologDedupKeys: [
+          [
+            "key": "prod_keys",
+          ],
+          [
+            "key": "test_keys",
+          ],
+        ],
       ],
     ]
   }
@@ -37,6 +124,8 @@ final class RawAppEventsConfigurationResponseFixtures: NSObject {
       Keys.advertiserIDCollectionEnabled: 1,
       Keys.eventCollectionEnabled: 1,
       Keys.iapObservationTime: 3600000000000,
+      Keys.iapManualAndAutoLogDedupWindow: 60000,
+      Keys.iapManualAndAutologDedupKeys: [],
     ]
   }
 
@@ -47,6 +136,8 @@ final class RawAppEventsConfigurationResponseFixtures: NSObject {
         Keys.advertiserIDCollectionEnabled: "bar",
         Keys.eventCollectionEnabled: "baz",
         Keys.iapObservationTime: "fuzz",
+        Keys.iapManualAndAutoLogDedupWindow: "bizz",
+        Keys.iapManualAndAutologDedupKeys: "buzz",
       ],
     ]
   }
@@ -59,6 +150,8 @@ final class RawAppEventsConfigurationResponseFixtures: NSObject {
         Keys.advertiserIDCollectionEnabled: Fuzzer.random,
         Keys.eventCollectionEnabled: Fuzzer.random,
         Keys.iapObservationTime: Fuzzer.random,
+        Keys.iapManualAndAutoLogDedupWindow: Fuzzer.random,
+        Keys.iapManualAndAutologDedupKeys: Fuzzer.random,
       ],
     ]
     return Fuzzer.randomize(json: response)

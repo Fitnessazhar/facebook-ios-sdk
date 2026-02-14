@@ -93,7 +93,9 @@ enum TestCoreKitComponents {
     blocklistEventsManager: _EventsProcessing = TestBlocklistEventsManager(),
     redactedEventsManager: _EventsProcessing = TestRedactedEventsManager(),
     sensitiveParamsManager: _AppEventsParameterProcessing = TestSensitiveParamsManager(),
-    transactionObserver: _TransactionObserving = TestTransactionObserver()
+    transactionObserver: _TransactionObserving = TestTransactionObserver(),
+    iapDedupeProcessor: _IAPDedupeProcessing = TestIAPDedupeProcessor(),
+    iapTransactionCache: _IAPTransactionCaching = IAPTransactionCache.shared
   ) -> CoreKitComponents {
     CoreKitComponents(
       accessTokenExpirer: accessTokenExpirer,
@@ -174,7 +176,9 @@ enum TestCoreKitComponents {
       blocklistEventsManager: blocklistEventsManager,
       redactedEventsManager: redactedEventsManager,
       sensitiveParamsManager: sensitiveParamsManager,
-      transactionObserver: transactionObserver
+      transactionObserver: transactionObserver,
+      iapDedupeProcessor: iapDedupeProcessor,
+      iapTransactionCache: iapTransactionCache
     )
   }
 }
